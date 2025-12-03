@@ -20,18 +20,15 @@ describe("test check", () => {
       }
     });
 
-    // const options = {
-    browser = await puppeteer.launch({
-      // headless: false,
-      // devtools: false,
-      // slowMo: 100,
-      // args: ["--no-sandbox", "--disable-setuid-sandbox"], // настройка для сред ci/cd
+    const options = {
+      args: ["--no-sandbox", "--disable-setuid-sandbox"], // настройка для сред ci/cd
+      slowMo: 100,
       // расскомментировать для локального прогона и закомменитровать для ci/cd
       // headless: false,
       // devtools: false,
-    });
+    };
 
-    // browser = await puppeteer.launch(options);
+    browser = await puppeteer.launch(options);
     page = await browser.newPage();
   });
 
