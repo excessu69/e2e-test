@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import { fork } from "child_process";
 
-jest.setTimeout(30000); // default puppeteer timeout
+jest.setTimeout(30000);
 
 describe("test check", () => {
   let browser = null;
@@ -11,21 +11,12 @@ describe("test check", () => {
 
   beforeAll(async () => {
     server = fork(`${__dirname}/e2e.server.js`);
-    await new Promise((resolve, reject) => {
-      if (server.connected) {
-        process.send("ok");
-        resolve();
-      } else {
-        reject();
-      }
-    });
+
+    await new Promise((resolve) => setTimeout(resolve, 2000)); // ждём запуск dev-server
 
     const options = {
-      args: ["--no-sandbox", "--disable-setuid-sandbox"], // настройка для сред ci/cd
+      args: ["--no-sandbox", "--disable-setuid-sandbox"],
       slowMo: 100,
-      // расскомментировать для локального прогона и закомменитровать для ci/cd
-      // headless: false,
-      // devtools: false,
     };
 
     browser = await puppeteer.launch(options);
@@ -33,8 +24,12 @@ describe("test check", () => {
   });
 
   afterAll(async () => {
-    await browser.close();
-    server.kill();
+    if (browser) {
+      await browser.close();
+    }
+    if (server) {
+      server.kill("SIGTERM");
+    }
   });
 
   test("тест на первый клик, елемент есть на странице", async () => {
